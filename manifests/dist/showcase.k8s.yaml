@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: showcase-deployment-c86b7808
+  namespace: team
+spec:
+  minReadySeconds: 0
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      cdk8s.io/metadata.addr: showcase-deployment-c81e2c3d
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        cdk8s.io/metadata.addr: showcase-deployment-c81e2c3d
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - envFrom:
+            - secretRef:
+                name: showcase
+          image: ghcr.io/benkeil/k8s-showcase:1.0.0
+          imagePullPolicy: Always
+          name: webserver
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: 10m
+              memory: 100Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+          startupProbe:
+            failureThreshold: 3
+            tcpSocket:
+              port: 8080
+      dnsPolicy: ClusterFirst
+      hostNetwork: false
+      restartPolicy: Always
+      securityContext:
+        fsGroupChangePolicy: Always
+        runAsNonRoot: true
+      setHostnameAsFQDN: false
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: showcase-deployment-service-c8483315
+  namespace: team
+spec:
+  externalIPs: []
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    cdk8s.io/metadata.addr: showcase-deployment-c81e2c3d
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: showcase-deployment-service-ingress-c89b2cdb
+  namespace: team
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: showcase-deployment-service-c8483315
+                port:
+                  number: 8080
+            path: /showcase
+            pathType: Prefix

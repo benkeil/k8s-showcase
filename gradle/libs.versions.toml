@@ -1,0 +1,36 @@
+[libraries]
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version = "3.0.3" }
+
+constructs = { module = "software.constructs:constructs", version = "10.3.0" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version = "2.17.2" }
+jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version = "2.17.2" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version = "2.17.2" }
+cdk8s = { module = "org.cdk8s:cdk8s", version = "2.69.34" }
+cdk8s-plus = { module = "org.cdk8s:cdk8s-plus-31", version = "2.0.14" }
+
+cdktf = { module = "com.hashicorp:cdktf", version = "0.20.11" }
+cdktf-provider-kubernetes = { module = "com.hashicorp:cdktf-provider-kubernetes", version = "11.10.1" }
+
+[bundles]
+application-implementation = [
+    "jackson-module-kotlin",
+    "ktor-server-netty",
+]
+
+manifests-implementation = [
+    "constructs",
+    "jackson-module-kotlin",
+    "jackson-dataformat-yaml",
+    "jackson-datatype-jsr310",
+    "cdk8s",
+    "cdk8s-plus",
+]
+
+infrastructure-implementation = [
+    "cdktf",
+    "cdktf-provider-kubernetes",
+]
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+ktor = { id = "io.ktor.plugin", version = "3.0.3" }
