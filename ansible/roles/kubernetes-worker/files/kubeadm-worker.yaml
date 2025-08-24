@@ -1,0 +1,8 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: kube-control-plane:6443
+    token: 2k6acq.nqw7v8cfg9g0usoc
+    unsafeSkipCAVerification: true

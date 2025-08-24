@@ -1,0 +1,14 @@
+---
+- name: "Install dependencies"
+  ansible.builtin.apt:
+    update_cache: "yes"
+    state: "present"
+    pkg:
+      - "sudo"
+- name: Configure sudoers
+  community.general.sudoers:
+    name: ben-as-root
+    state: present
+    user: ben
+    runas: root
+    commands: ALL

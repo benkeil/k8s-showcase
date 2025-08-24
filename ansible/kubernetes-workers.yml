@@ -1,0 +1,5 @@
+- hosts: kubernetes_workers
+  roles:
+    - sudo
+    - kubernetes
+    - kubernetes-worker

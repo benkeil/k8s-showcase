@@ -1,7 +1,6 @@
-rootProject.name = "k8s-showcase"
+rootProject.name = "local-kubernetes"
 
 include(
-    "manifests",
-    "infrastructure",
-    "code:application",
-)
+    listOf(
+        "manifests",
+    ))

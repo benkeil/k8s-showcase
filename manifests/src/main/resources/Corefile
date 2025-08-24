@@ -1,0 +1,28 @@
+homeassistant.home.keil.pub. {
+    log
+    errors
+    debug
+
+    hosts {
+        192.168.178.50 homeassistant.home.keil.pub
+    }
+}
+
+home.keil.pub. {
+    log
+    errors
+    debug
+
+    template IN A {
+        match ".*\.home\.keil\.pub\.$"
+        answer "{{ .Name }} 60 IN A 192.168.178.200"
+    }
+}
+
+. {
+    log
+    errors
+    debug
+
+    forward . 192.168.178.1
+}

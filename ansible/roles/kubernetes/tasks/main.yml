@@ -1,0 +1,95 @@
+---
+- name: "Install dependencies"
+  ansible.builtin.apt:
+    update_cache: "yes"
+    state: "present"
+    pkg:
+      - "curl"
+      - "gnupg2"
+
+- name: "Turn off swap"
+  command: "swapoff -a"
+  changed_when: false
+
+- name: "Disable swap"
+  ansible.builtin.service:
+    name: "dphys-swapfile"
+    enabled: "no"
+    state: "stopped"
+  when: "raspberry_pi|default(false)|bool == true"
+- name: "Enable cgroup via boot commandline if not already enabled"
+  ansible.builtin.replace:
+    path: "/boot/firmware/cmdline.txt"
+    regexp: '^([\w](?!.*\b{{ cgroup_item }}\b).*)$'
+    replace: '\1 {{ cgroup_item }}'
+  with_items:
+    - "cgroup_enable=memory"
+    - "cgroup_memory=1"
+    - "cgroup_enable=cpuset"
+  loop_control:
+    loop_var: "cgroup_item"
+  notify:
+    - "reboot"
+  when: "raspberry_pi|default(false)|bool == true"
+- name: "Enable ipv4 forwarding"
+  ansible.posix.sysctl:
+    name: "net.ipv4.ip_forward"
+    value: "1"
+    sysctl_set: true
+    state: "present"
+    reload: true
+
+- name: "Get Kubernetes package key"
+  shell: "curl -fsSL {{ k8s_repository }}Release.key | gpg --dearmor -o {{ k8s_gpgpath }}"
+  args:
+    creates: "{{ k8s_gpgpath }}"
+- name: "Install Kubernetes repository"
+  apt_repository:
+    filename: "kubernetes"
+    repo: "deb [signed-by={{ k8s_gpgpath }}] {{ k8s_repository }} /"
+
+- name: "Get cri-o package key"
+  shell: "curl -fsSL {{ crio_repository }}Release.key | gpg --dearmor -o {{ crio_gpgpath }}"
+  become: true
+  args:
+    creates: "{{ crio_gpgpath }}"
+- name: "Install cri-o repository"
+  apt_repository:
+    filename: "kubernetes"
+    repo: "deb [signed-by={{ crio_gpgpath }}] {{ crio_repository }} /"
+
+- name: "Install Kubernetes packages"
+  ansible.builtin.apt:
+    update_cache: "yes"
+    state: "present"
+    pkg:
+      - "kubelet"
+      - "kubeadm"
+      - "kubectl"
+      - "cri-o"
+- name: "Mark Kubernetes packages as hold"
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: "hold"
+  loop:
+    - "kubelet"
+    - "kubeadm"
+    - "kubectl"
+    - "cri-o"
+
+- name: "Add br_netfilter"
+  community.general.modprobe:
+    name: "br_netfilter"
+    state: "present"
+
+- name: "Start cri-o"
+  ansible.builtin.service:
+    name: "crio"
+    state: "started"
+    enabled: true
+
+- name: "Start kubelet"
+  ansible.builtin.service:
+    name: "kubelet"
+    state: "started"
+    enabled: true

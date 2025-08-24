@@ -1,0 +1,5 @@
+k8s_gpgpath: "/etc/apt/keyrings/kubernetes-apt-keyring.gpg"
+k8s_repository: "https://pkgs.k8s.io/core:/stable:/v1.33/deb/"
+
+crio_gpgpath: "/etc/apt/keyrings/cri-o-apt-keyring.gpg"
+crio_repository: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/v1.33/deb/"

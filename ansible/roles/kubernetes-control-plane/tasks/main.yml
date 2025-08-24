@@ -1,0 +1,60 @@
+---
+- name: "create .kubeadm directory"
+  file: 
+    path: "{{ ansible_env.HOME }}/.kubeadm"
+    state: directory
+
+- name: "Copy kubeadm configs"
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ ansible_env.HOME }}/.kubeadm/{{ item }}"
+    owner: "ben"
+    group: "ben"
+  loop:
+    - "kubeadm-control-plane.yaml"
+
+- name: "Create directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: "directory"
+  loop:
+    - "/etc/kubernetes/pki"
+    - "/etc/ca-certificates/aws-irsa"
+- name: "Copy certificates"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/kubernetes/pki/{{ item }}"
+  loop:
+    - "ca.crt"
+    - "ca.key"
+- name: "Copy service account signing certificates"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/ca-certificates/aws-irsa/{{ item }}"
+  loop:
+    - "sa-signer.key"
+    - "sa-signer-pkcs8.pub"
+
+- name: "Check if the cluster is already initialized"
+  ansible.builtin.shell: "kubectl cluster-info"
+  register: "kubectl_cluster_info"
+  ignore_errors: true
+  vars:
+    ansible_become: false
+
+- name: "Init cluster"
+  command: "kubeadm init --config {{ ansible_env.HOME }}/.kubeadm/kubeadm-control-plane.yaml"
+  register: "kubeadm_init"
+  when: kubectl_cluster_info.rc != 0
+
+- name: "Create .kube directory"
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: "directory"
+- name: "Copy kubeconfig"
+  ansible.builtin.copy:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    remote_src: "yes"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

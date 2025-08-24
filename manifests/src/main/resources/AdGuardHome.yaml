@@ -1,0 +1,25 @@
+bind_hosts:
+  - 0.0.0.0       # AdGuard hört auf allen Interfaces
+dns:
+  port: 5353      # Interner DNS-Port (angepasst, um Konflikt mit CoreDNS zu vermeiden)
+  upstream_dns:
+    - https://dns.quad9.net/dns-query       # DNS-over-HTTPS Quad9
+    - 9.9.9.9                                 # Standard Quad9 IPv4
+    - 149.112.112.112                         # Backup Quad9 IPv4
+    - 2620:fe::fe                             # Quad9 IPv6
+    - 2620:fe::9                              # Backup IPv6
+  bootstrap_dns:
+    - 9.9.9.9                                 # Für die Initialisierung, bevor DoH funktioniert
+    - 149.112.112.112
+  client_protection:
+    enabled: true
+http:
+  port: 80
+  bind_hosts:
+    - 0.0.0.0
+admin:
+  port: 3000
+  bind_hosts:
+    - 0.0.0.0
+logs:
+  verbose: true

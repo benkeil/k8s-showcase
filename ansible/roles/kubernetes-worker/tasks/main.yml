@@ -1,0 +1,26 @@
+---
+- name: "create .kubeadm directory"
+  file:
+    path: "{{ ansible_env.HOME }}/.kubeadm"
+    state: directory
+
+- name: "Copy kubeadm configs"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_env.HOME }}/.kubeadm/{{ item }}"
+    owner: "ben"
+    group: "ben"
+  loop:
+    - "kubeadm-worker.yaml"
+
+- name: "Check if the cluster is already initialized"
+  ansible.builtin.shell: "kubectl cluster-info"
+  register: "kubectl_cluster_info"
+  ignore_errors: true
+  vars:
+    ansible_become: false
+
+- name: "Init cluster"
+  command: "kubeadm join --config {{ ansible_env.HOME }}/.kubeadm/kubeadm-worker.yaml"
+  register: "kubeadm_init"
+  when: kubectl_cluster_info.rc != 0

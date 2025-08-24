@@ -1,0 +1,17 @@
+- name: "Copy calico.yaml"
+  ansible.builtin.template:
+    src: "calico.yaml"
+    dest: "{{ ansible_env.HOME }}/.kubeadm/"
+    owner: "ben"
+    group: "ben"
+  become: true
+- name: "Check if calico is already installed"
+  ansible.builtin.shell: "kubectl -n calico-system get pod -l app.kubernetes.io/name=calico-node --no-headers | grep Running"
+  register: "calico_node"
+  ignore_errors: true
+- name: "Install Calico CNI CRDs"
+  command: "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/tigera-operator.yaml"
+  when: calico_node.rc != 0
+- name: "Install Calico CNI"
+  command: "kubectl create -f {{ ansible_env.HOME }}/.kubeadm/calico.yaml"
+  when: calico_node.rc != 0

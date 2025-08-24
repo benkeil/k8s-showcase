@@ -92,3 +92,9 @@ cdktf.out
 build
 **/java/
 **/resources/imports/
+secret.properties
+
+certificates/ca.crt
+certificates/ca.key
+certificates/sa-signer.key
+dist/

@@ -1,0 +1,5 @@
+- hosts: kubernetes_control_planes
+  roles:
+    - kubernetes
+    - kubernetes-control-plane
+    - calico
