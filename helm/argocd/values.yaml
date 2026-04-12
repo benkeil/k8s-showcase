@@ -40,7 +40,7 @@ configs:
       name: AWS Cognito
       issuer: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_leIEyWVtk
       clientID: 6u94ao1mgg1mn9fkf7cbbrc20l
-      clientSecret: $argocd-oidc:oidc.clientSecret
+      clientSecret: '$argocd-oidc:oidc.clientSecret'
       requestedScopes:
         - openid
         - email
