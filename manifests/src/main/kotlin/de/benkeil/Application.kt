@@ -20,7 +20,6 @@ fun main() {
   MetallbCrdsChart(app, env)
   MetallbChart(app, env)
   TreafikChart(app, env)
-  HomeChart(app, env)
   // CoreDnsChart(app, env)
   app.synth()
 }
