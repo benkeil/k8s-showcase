@@ -1,11 +1,11 @@
 package de.benkeil
 
+import java.util.Base64
 import org.cdk8s.Chart
 import org.cdk8s.ChartProps
 import org.cdk8s.plus32.Namespace
 import org.cdk8s.plus32.Secret
 import software.constructs.Construct
-import java.util.Base64
 
 private const val app = "home"
 
@@ -18,17 +18,16 @@ class HomeChart(scope: Construct, env: Environment) :
   init {
     Namespace.Builder.create(this, app).name(app).build()
 
-      val auth =
-          Base64.getEncoder()
-              .encodeToString("${env.dockerUsername}:${env.dockerPassword}".toByteArray())
-      val dockerSecret =
-          Secret.Builder.create(this, "docker")
-              .name("docker")
-              .type("kubernetes.io/dockerconfigjson")
-              .stringData(
-                  mapOf(
-                      ".dockerconfigjson" to
-                              """
+    val auth =
+        Base64.getEncoder()
+            .encodeToString("${env.dockerUsername}:${env.dockerPassword}".toByteArray())
+    Secret.Builder.create(this, "docker")
+        .name("docker")
+        .type("kubernetes.io/dockerconfigjson")
+        .stringData(
+            mapOf(
+                ".dockerconfigjson" to
+                    """
                         {
                             "auths": {
                                 "https://index.docker.io/v1/": {
@@ -40,9 +39,9 @@ class HomeChart(scope: Construct, env: Environment) :
                             }
                         }
                         """
-                                  .trimIndent(),
-                  ),
-              )
-              .build()
+                        .trimIndent(),
+            ),
+        )
+        .build()
   }
 }

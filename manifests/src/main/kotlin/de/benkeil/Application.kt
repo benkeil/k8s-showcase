@@ -21,7 +21,6 @@ fun main() {
   MetallbChart(app, env)
   TreafikChart(app, env)
   HomeChart(app, env)
-  AdguardHomeChart(app, env)
   // CoreDnsChart(app, env)
   app.synth()
 }

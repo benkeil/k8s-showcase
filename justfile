@@ -55,6 +55,10 @@ deploy-traefik:
 deploy-adguardhome:
     @just deploy adguardhome
 
+[working-directory('helm/argocd')]
+deploy-argocd:
+    helm install argocd argo/argo-cd -n argocd -f values.yaml
+
 [working-directory('manifests')]
 deploy chart:
     kubectl apply -f dist/{{ chart }}.k8s.yaml
@@ -97,3 +101,6 @@ ansible-playbook *args='':
 
 encrypt:
     age --encrypt --identity ~/.config/sops/age/key.txt -o manifests/src/main/resources/secret.properties.enc manifests/src/main/resources/secret.properties
+
+encrypt-yaml:
+    age --encrypt --identity ~/.config/sops/age/key.txt -o manifests/src/main/resources/secret.yaml.enc manifests/src/main/resources/secret.yaml

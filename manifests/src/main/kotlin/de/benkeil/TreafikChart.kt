@@ -157,7 +157,7 @@ class TreafikChart(scope: Construct, env: Environment) :
                             listOf(
                                 mapOf(
                                     "name" to "volume-setup",
-                                    "image" to "busybox:latest",
+                                    "image" to "docker.io/library/busybox:latest",
                                     "command" to
                                         listOf("sh", "-c", "chown -R 65532:65532 /mnt/data"),
                                     "securityContext" to

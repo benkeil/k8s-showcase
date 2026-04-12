@@ -1,0 +1,30 @@
+global:
+  domain: argocd.home.keil.pub
+
+certificate:
+  enabled: true
+
+server:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+
+configs:
+  params:
+    server.insecure: true
+    # 1 day
+    timeout.reconciliation: "86400"
+  cm:
+    url: https://argocd.home.keil.pub
+    oidc.config: |
+      name: GitHub
+      issuer: https://token.actions.githubusercontent.com
+      clientID: Ov23lipfMKsqTZMYyVDv
+      clientSecret: $oidc.github.clientSecret
+      requestedScopes: ["openid", "profile", "email", "groups"]
+  rbac:
+    policy.default: role:none
+    policy.csv: |
+      g, benkeil, role:admin
+    scopes: '[preferred_username]'
