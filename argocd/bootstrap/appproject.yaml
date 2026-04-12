@@ -6,7 +6,7 @@ metadata:
 spec:
   description: Platform root project for all GitOps apps
   sourceRepos:
-    - https://github.com/benkeil/homelab-bootstrap.git
+    - git@github.com:benkeil/homelab-bootstrap.git
   destinations:
     - namespace: "*"
       server: https://kubernetes.default.svc

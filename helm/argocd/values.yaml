@@ -2,9 +2,28 @@ global:
   domain: argocd.home.keil.pub
 
 certificate:
-  enabled: true
+  enabled: false
+
+controller:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+repoServer:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 server:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
   service:
     type: ClusterIP
   ingress:
@@ -18,13 +37,16 @@ configs:
   cm:
     url: https://argocd.home.keil.pub
     oidc.config: |
-      name: GitHub
-      issuer: https://token.actions.githubusercontent.com
-      clientID: Ov23lipfMKsqTZMYyVDv
-      clientSecret: $oidc.github.clientSecret
-      requestedScopes: ["openid", "profile", "email", "groups"]
+      name: AWS Cognito
+      issuer: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_leIEyWVtk
+      clientID: 6u94ao1mgg1mn9fkf7cbbrc20l
+      clientSecret: $argocd-oidc:oidc.clientSecret
+      requestedScopes:
+        - openid
+        - email
+        - profile
   rbac:
     policy.default: role:none
     policy.csv: |
-      g, benkeil, role:admin
-    scopes: '[preferred_username]'
+      g, benkeil.login@pm.me, role:admin
+    scopes: '[email]'

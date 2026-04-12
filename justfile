@@ -55,9 +55,42 @@ deploy-traefik:
 deploy-adguardhome:
     @just deploy adguardhome
 
+external-secrets-install:
+    helm install external-secrets external-secrets/external-secrets \
+      -n external-secrets \
+      --create-namespace
+
+external-secrets-upgrade:
+    helm upgrade external-secrets external-secrets/external-secrets \
+      -n external-secrets \
+      --create-namespace
+
 [working-directory('helm/argocd')]
-deploy-argocd:
-    helm install argocd argo/argo-cd -n argocd -f values.yaml
+argocd-install:
+    helm install --create-namespace argocd argo/argo-cd -n argocd -f values.yaml
+
+[working-directory('helm/argocd')]
+argocd-upgrade:
+    helm upgrade --create-namespace argocd argo/argo-cd -n argocd -f values.yaml
+
+[working-directory('argocd/secrets')]
+argocd-secrets-generate:
+      ssh-keygen -t ed25519 -C "argocd" -f argocd-github.id_ed25519
+
+[working-directory('argocd/secrets')]
+argocd-secrets:
+    kubectl create secret generic github-credentials \
+      -n argocd \
+      --from-literal=type=git \
+      --from-literal=url=git@github.com:benkeil \
+      --from-file=sshPrivateKey=./argocd-github.id_ed25519 \
+      --dry-run=client -o yaml \
+    | kubectl apply -f -
+    kubectl label secret github-credentials --overwrite -n argocd argocd.argoproj.io/secret-type=repo-creds
+
+[working-directory('argocd/bootstrap')]
+argocd-bootstrap:
+    kubectl apply -f ./
 
 [working-directory('manifests')]
 deploy chart:

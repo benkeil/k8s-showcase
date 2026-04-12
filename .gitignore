@@ -98,3 +98,7 @@ certificates/ca.crt
 certificates/ca.key
 certificates/sa-signer.key
 dist/
+
+
+*.id_ed25519
+*.id_ed25519.pub
