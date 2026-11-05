@@ -7,6 +7,7 @@ spec:
   description: Platform root project for all GitOps apps
   sourceRepos:
     - git@github.com:benkeil/homelab-bootstrap.git
+    - git@github.com:benkeil/steamdb.git
     - ghcr.io/n8n-io/n8n-helm-chart
   destinations:
     - namespace: "*"

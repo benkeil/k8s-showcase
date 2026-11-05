@@ -36,6 +36,7 @@ configs:
     timeout.reconciliation: "86400"
   cm:
     url: https://argocd.home.keil.pub
+    kustomize.buildOptions: --enable-helm
     oidc.config: |
       name: AWS Cognito
       issuer: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_leIEyWVtk
