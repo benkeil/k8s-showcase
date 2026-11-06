@@ -93,6 +93,7 @@ build
 **/java/
 **/resources/imports/
 secret.properties
+secret.yaml
 
 certificates/ca.crt
 certificates/ca.key
@@ -102,3 +103,5 @@ dist/
 
 *.id_ed25519
 *.id_ed25519.pub
+
+.env
